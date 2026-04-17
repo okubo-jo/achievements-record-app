@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>実績記録アプリ</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 16px;
+            background: #f7f7f7;
+        }
+        h1, h2 {
+            color: #333;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        input, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 6px;
+            margin-bottom: 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button {
+            background: #2d7ff9;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1c63c7;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #f0f4f8;
+            padding: 8px 12px;
+            width: auto;
+        }
+
+        .delete-btn {
+            background: #e74c3c;
+            padding: 8px 12px;
+            width: auto;
+        }
+
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .summary {
+            font-size: 18px;
+            font-weight: bold;
+            color: #222;
+        }
+
+        .memo-cell {
+            white-space: pre-wrap;
+        }
+    </style> 
+</head>
+<body>
+    <h1>実績記録アプリ</h1>
+
+    <div class="card">
+        <h2>登録</h2>
+        <form action="/add" method="post">
+            <label>日付</label>
+            <input type="date" name="date">
+
+            <label>項目</label>
+            <input type="text" name="category" placeholder="例: Python学習、読書、電子工作">
+
+            <label>時間</label>
+            <input type="number" name="hours" min="0" placeholder="例: 2">
+
+            <label>分</label>
+            <input type="number" name="minutes" min="0" placeholder="例: 30">
+
+            <label>メモ</label>
+            <textarea name="memo" rows="4" placeholder="例:Flaskを勉強した、 ROS2本を読んだ"></textarea>
+
+            <button type="submit">登録する</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>合計</h2>
+        <p class="summary">合計自主勉強時間: {{ total_hours }}時間 {{ total_minutes }}分</p>  
+    </div>
+
+    <div class="card">
+        <h2>記録一覧</h2>
+        {% if achievements %}
+        <table>
+            <thead>
+                <tr>
+                    <th>日付</th>
+                    <th>項目</th>
+                    <th>時間</th>
+                    <th>メモ</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in achievements %}
+                <tr>
+                    <td>{{ item["date"] }}</td>
+                    <td>{{ item["category"] }}</td>
+                    <td>{{ item["hours"] }}時間 {{ item["minutes"] }}</td>分
+                    <td class="memo-cell">{{ item["memo"] }}</td>
+                    <td>
+                        <form action="/delete/{{ item['id']}}" method="post" onsubmit="return confirm('削除しますか？')">
+                            <button type="submit" class="delete-btn">削除</button>
+                        </from>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>まだ記録がありません。</p>
+        {% endif %}
+    </div>
+</body>
+</html>
