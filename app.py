@@ -1,20 +1,30 @@
+# render_templateはHTMLファイルを表示するための関数
+# requestはユーザーからの入力を受け取る
+# redirectは別のページへ移動させる
+# url_forはURLを自動で作る
+# datetimeを使って、今日の日付と現在の時間を取得できる
 from flask import Flask, render_template, request,redirect , url_for
 import sqlite3
 from datetime import datetime
 
+# Flaskアプリの本体・土台を作成する
+# __name__はこのファイル自身を意味する
 app = Flask(__name__)
 DB_NAME = "achievements.db"
 
+# データベース接続を作る関数を定義する処理
 def get_db_connection():
-    conn = sqlite3.connect(DB_NAME)
-    conn.row_factory = sqlite3.Row
+    conn = sqlite3.connect(DB_NAME)    # SQLiteに接続
+    conn.row_factory = sqlite3.Row     #rowは「列」factoryでデータの作り方を設定する
     return conn
 
+# データベースの初期設定を行う処理
+# executeはSQLクエリ(挿入、取得、更新、削除)を実行するメソッド
 def init_db():
     conn = get_db_connection()
     conn.execute("""
-        CREATE TABLE IF NOT EXISTS achievements (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+        CREATE TABLE IF NOT EXISTS achievements (    
+            id INTEGER PRIMARY KEY AUTOINCREMENT,    
             date TEXT NOT NULL,
             category TEXT NOT NULL,
             hours INTEGER NOT NULL DEFAULT 0,
@@ -23,8 +33,8 @@ def init_db():
             created_at TEXT NOT NULL
         )
     """)
-    conn.commit()
-    conn.close()
+    conn.commit()    #変更を確定する。これがないと保存されない。
+    conn.close()     #データベースとの接続を終了する。これを書かないと無駄にメモリを使ってしまう。
 
 @app.route("/")
 def index():
