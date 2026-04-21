@@ -125,6 +125,7 @@ def add():
     #データ入力後にトップページに戻る
     return redirect(url_for("index"))
 
+# 削除機能
 @app.route("/delete/<int:achievement_id>", methods=["POST"])
 def delete(achievement_id):
     conn = get_db_connection()
@@ -132,6 +133,65 @@ def delete(achievement_id):
     conn.commit()
     conn.close()
     return redirect(url_for("index"))
+
+# 編集機能
+@app.route("/edit/<int:achievement_id>", methods=["GET", "POST"])
+def edit(achievement_id):
+    conn = get_db_connection()
+
+    # POST → 更新処理
+    if request.method == "POST":
+        date = request.form.get("date", "").strip()
+        category = request.form.get("category", "").strip()
+        hours = request.form.get("hours", "0").strip()
+        minutes = request.form.get("minutes", "0").strip()
+        memo = request.form.get("memo", "").strip()
+
+        # 空対策
+        if not date:
+            date = datetime.now().strftime("%Y-%m-%d")
+        if not category:
+            category = "未分類"
+
+        # 数値変換
+        try:
+            hours = int(hours) if hours else 0
+            minutes = int(minutes) if minutes else 0
+        except ValueError:
+            hours = 0
+            minutes = 0
+
+        # マイナス防止
+        if hours < 0:
+            hours = 0
+        if minutes < 0:
+            minutes = 0
+
+        # 分→時間変換
+        hours += minutes // 60
+        minutes = minutes % 60
+
+        # 更新
+        conn.execute("""
+            UPDATE achievements
+            SET date = ?, category = ?, hours = ?, minutes = ?, memo = ?
+            WHERE id = ?
+        """, (date, category, hours, minutes, memo, achievement_id))
+
+        conn.commit()
+        conn.close()
+
+        return redirect(url_for("index"))
+
+    # GET → 編集画面表示
+    achievement = conn.execute(
+        "SELECT * FROM achievements WHERE id = ?",
+        (achievement_id,)
+    ).fetchone()
+
+    conn.close()
+
+    return render_template("edit.html", achievement=achievement)
 
 if __name__ == "__main__":
     init_db()

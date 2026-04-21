@@ -134,12 +134,14 @@
                 <tr>
                     <td>{{ item["date"] }}</td>
                     <td>{{ item["category"] }}</td>
-                    <td>{{ item["hours"] }}時間 {{ item["minutes"] }}</td>分
+                    <td>{{ item["hours"] }}時間 {{ item["minutes"] }}分</td>
                     <td class="memo-cell">{{ item["memo"] }}</td>
                     <td>
+                        <a href="{{ url_for('edit', achievement_id=item['id']) }}">編集</a>
+
                         <form action="/delete/{{ item['id']}}" method="post" onsubmit="return confirm('削除しますか？')">
                             <button type="submit" class="delete-btn">削除</button>
-                        </from>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}

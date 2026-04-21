@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>編集</title>
+</head>
+<body>
+    <h1>記録の編集</h1>
+
+    <form method="POST">
+        日付: <input type="date" name="date" value="{{ achievement.date }}"><br>
+
+        カテゴリ: <input type="text" name="category" value="{{ achievement.category }}"><br>
+
+        時間: <input type="number" name="hours" value="{{ achievement.hours }}"><br>
+
+        分: <input type="number" name="minutes" value="{{ achievement.minutes }}"><br>
+
+        メモ:<br>
+        <textarea name="memo">{{ achievement.memo }}</textarea><br>
+
+        <button type="submit">更新</button>
+    </form>
+
+    <a href="{{ url_for('index') }}">戻る</a>
+</body>
+</html>
